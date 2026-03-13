@@ -1,0 +1,18 @@
+# Environment variables — NEVER commit these
+.env
+*.env
+.env.local
+
+# Dependencies
+node_modules/
+frontend/TruFund/node_modules/
+
+# Foundry build artifacts
+contracts/out/
+contracts/cache/
+contracts/broadcast/
+
+# Misc
+.DS_Store
+dist/
+build/
