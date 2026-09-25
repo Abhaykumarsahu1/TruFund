@@ -1,5 +1,8 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { ethers } from "ethers";
+import CampaignFactoryABI from "../contracts/CampaignFactory.json";
+import CampaignABI from "../contracts/Campaign.json";
+import { CONTRACT_ADDRESSES } from "../contracts/addresses";
 
 const WalletContext = createContext();
 
@@ -10,8 +13,37 @@ export const WalletProvider = ({ children }) => {
     const [chainId, setChainId]   = useState(null);
     const [loading, setLoading]   = useState(false);
     const [error, setError]       = useState(null);
+    const [isBoardMember, setIsBoardMember] = useState(false);
 
     const SEPOLIA_CHAIN_ID = "0xaa36a7";
+
+    const checkBoardMembership = async (account, provider) => {
+    try {
+         const factory = new ethers.Contract(
+         CONTRACT_ADDRESSES.CAMPAIGN_FACTORY,
+         CampaignFactoryABI.abi,
+         provider
+        );
+        const allCampaigns = await factory.getAllCampaigns();
+
+        for (const address of allCampaigns) {
+            const campaign = new ethers.Contract(
+                address,
+                CampaignABI.abi,
+                provider
+            );
+            const isMember = await campaign.isBoardMember(account);
+            if (isMember) {
+                setIsBoardMember(true);
+                return;
+            }
+        }
+        setIsBoardMember(false);
+    } catch (err) {
+        console.error("Board check failed:", err);
+        setIsBoardMember(false);
+    }
+};
 
     // ONLY listen for changes — no auto connect
     useEffect(() => {
@@ -88,6 +120,7 @@ export const WalletProvider = ({ children }) => {
         setProvider(web3Provider);
         setSigner(web3Signer);
         setAccount(accounts[0]);
+        await checkBoardMembership(accounts[0], web3Provider);
         setChainId(network.chainId.toString());
 
     } catch (err) {
@@ -107,6 +140,7 @@ export const WalletProvider = ({ children }) => {
         setSigner(null);
         setChainId(null);
         setError(null);
+        setIsBoardMember(false);
     };
 
     const shortAddress = (addr) => {
@@ -122,6 +156,7 @@ export const WalletProvider = ({ children }) => {
             chainId,
             loading,
             error,
+            isBoardMember,
             connectWallet,
             disconnectWallet,
             shortAddress,

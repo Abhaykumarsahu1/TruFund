@@ -6,6 +6,7 @@ import CampaignDetail from "./pages/CampaignDetail";
 import CampaignerDashboard from "./pages/CampaignerDashboard";
 import BoardDashboard from "./pages/BoardDashboard";
 import Navbar from "./components/Navbar";
+import BoardHome from "./pages/BoardHome";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/campaign/:address"     element={<CampaignDetail />} />
         <Route path="/dashboard"             element={<CampaignerDashboard />} />
         <Route path="/board/:address"        element={<BoardDashboard />} />
+        <Route path="/board-home" element={<BoardHome />} />
       </Routes>
     </BrowserRouter>
   );

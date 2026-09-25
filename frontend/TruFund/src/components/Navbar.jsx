@@ -2,7 +2,7 @@ import { useWallet } from "../context/WalletContext";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const Navbar = () => {
-    const { account, connectWallet, disconnectWallet, shortAddress, loading } = useWallet();
+    const { account, connectWallet, disconnectWallet, shortAddress, loading, isBoardMember } = useWallet();
     const navigate  = useNavigate();
     const location  = useLocation();
 
@@ -48,6 +48,18 @@ const Navbar = () => {
                     >
                         My Dashboard
                     </button>
+                    {isBoardMember && (
+                        <button
+                            style={{
+                                ...styles.navLink,
+                                color: isActive("/board-home") ? "#f59e0b" : "#94a3b8",
+                                borderBottom: isActive("/board-home") ? "2px solid #f59e0b" : "2px solid transparent",
+                            }}
+                            onClick={() => navigate("/board-home")}
+                        >
+                            Board Member
+                        </button>
+                    )}
                 </div>
             )}
 
