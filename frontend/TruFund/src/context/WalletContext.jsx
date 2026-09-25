@@ -54,17 +54,34 @@ export const WalletProvider = ({ children }) => {
         setError(null);
 
         // force MetaMask provider, not Brave
-        const provider = window.ethereum.providers 
+        const metaMaskProvider = window.ethereum.providers 
             ? window.ethereum.providers.find(p => p.isMetaMask && !p.isBraveWallet)
             : window.ethereum;
 
-        // this will trigger MetaMask popup
-        const accounts = await provider.request({
+        if (!metaMaskProvider) {
+            setError("MetaMask not found!");
+            return;
+        }
+
+        // Step 1 — force disconnect all accounts first
+        // This makes MetaMask always show the account picker popup
+        await metaMaskProvider.request({
+            method: "wallet_requestPermissions",
+            params: [{ eth_accounts: {} }],
+        });
+
+        // Step 2 — now get the selected account
+        const accounts = await metaMaskProvider.request({
             method: "eth_requestAccounts",
         });
 
-        // set MetaMask as the active provider for ethers
-        const web3Provider = new ethers.BrowserProvider(provider);
+        if (!accounts || accounts.length === 0) {
+            setError("No account selected.");
+            return;
+        }
+
+        // Step 3 — set up provider and signer
+        const web3Provider = new ethers.BrowserProvider(metaMaskProvider);
         const web3Signer   = await web3Provider.getSigner();
         const network      = await web3Provider.getNetwork();
 

@@ -215,10 +215,12 @@ const DonorDashboard = () => {
                                          src={getIPFSUrl(campaign.ipfsHash)}
                                          alt={campaign.title}
                                            style={{
-                                            width: "100%",
-                                            height: "160px",
+                                             width: "calc(100% + 56px)",
+                                            height: "180px",
                                             objectFit: "cover",
-                                            borderRadius: "10px",
+                                            borderRadius: "10px 10px 0 0",
+                                            margin: "-28px -28px 0 -28px",
+                                            display: "block",
                                         }}
                                     />
                                 )}
